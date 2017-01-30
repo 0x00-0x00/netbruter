@@ -1,8 +1,0 @@
-setup.py
-bin/netbruter
-netbruter.egg-info/PKG-INFO
-netbruter.egg-info/SOURCES.txt
-netbruter.egg-info/dependency_links.txt
-netbruter.egg-info/not-zip-safe
-netbruter.egg-info/top_level.txt
-src/arguments.py
