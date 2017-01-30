@@ -5,7 +5,7 @@ from aiosocks.connector import SocksConnector, HttpProxyAddr, HttpProxyAuth
 
 def generate_credentials():
     charset = "abcdefghijklmnopqrstuvwxyzABCDEFGHIJKLMNOPQRSTUVWXYZ0123456789"
-    return ''.join([random.choice(charset) for x in range(8)]), ''.join([random.choice(charset) for x in range(8)])
+    return ''.join([random.choice(charset) for _ in range(8)]), ''.join([random.choice(charset) for _ in range(8)])
 
 
 def parse_proxy_address(string):
