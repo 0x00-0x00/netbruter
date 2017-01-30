@@ -6,7 +6,7 @@ import json
 import sys
 
 from netbruter.arguments import argument_parsing
-from netbruter.tor import get_tor_connector
+from netbruter.tor import get_tor_connector, parse_proxy_address
 from copy import copy
 from fake_useragent import UserAgent, FakeUserAgentError
 
@@ -18,7 +18,10 @@ except ImportError:
 
 
 class Netbrute:
-    def __init__(self, aiohttp_session, target_url, payload_model, wordlist, error_string):
+    """
+    Main program class
+    """
+    def __init__(self, aiohttp_session, target_url, payload_model, wordlist, error_string, tor=None, tor_address=None):
         self.queue = Queue()
         self.attack_url = target_url
         self.error_string = error_string
@@ -26,6 +29,11 @@ class Netbrute:
         self.session = aiohttp_session
         self.wordlist = wordlist
         self.found = Event()
+
+        self.tor_use = tor
+        if self.tor_use and tor_address:
+            ip, port = parse_proxy_address(tor_address)
+            self.tor_address = "http://{0}:{1}".format(ip, port)
 
     @staticmethod
     def _generate_payload_type(user_input):
@@ -75,8 +83,12 @@ class Netbrute:
         }
         custom_payload = self._adjust_payload(password)
         with async_timeout.timeout(10):
-            async with self.session.post(self.attack_url, data=self._encode_payload_www(custom_payload), headers=headers,
-                                         proxy="http://localhost:9050") as response:
+            if self.tor:
+                proxy_addr = self.tor_address
+            else:
+                proxy_addr = None
+            async with self.session.post(self.attack_url, data=self._encode_payload_www(custom_payload),
+                                         headers=headers, proxy=proxy_addr) as response:
 
                 body, status, response_url = await response.text(), response.status, response.url
                 if status == 200 and (self.error_string not in response_url):
@@ -130,5 +142,5 @@ if __name__ == "__main__":
     else:
         session = aiohttp.ClientSession(loop=loop)
 
-    net = Netbrute(session, args.url, args.payload, args.wordlist, args.error_string)
+    net = Netbrute(session, args.url, args.payload, args.wordlist, args.error_string, tor=args.tor)
     loop.run_until_complete(net.initiate())
