@@ -22,6 +22,8 @@ def argument_parsing():
     parser.add_argument("-w", "--wordlist", help="Wordlist to guess correct password", required=True, type=str)
     parser.add_argument("-e", "--error-string", help="Error string to check correct or incorrect guesses",
                         required=True, type=str)
+    parser.add_argument("-t", "--tasks", help="How many tasks are going to be used", type=int,
+                        default=64)
     parser.add_argument("--tor", action="store_true")
     parser.add_argument("--tor-address", type=str, help="Tor proxy address and port separated by ':'")
     parser.add_argument("--debug", action="store_true", help="Enable debug log messages")
