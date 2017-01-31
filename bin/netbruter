@@ -129,7 +129,7 @@ class Netbrute:
         return
 
     def _report_status(self):
-        prctg = "%15.2f%%" % (self.tried_passwords / float(self.loaded_passwords))
+        prctg = "%15.2f%%" % (self.tried_passwords / float(self.loaded_passwords) * 100)
         sys.stdout.write("\rPROGRESS: {0}".format(prctg))
         sys.stdout.flush()
 
