@@ -108,7 +108,7 @@ class Netbrute:
             else:
                 proxy_addr = None
             async with self.session.post(self.attack_url, data=self._encode_payload_www(custom_payload),
-                                         headers=headers, proxy="{0}".format(proxy_addr)) as response:
+                                         headers=headers, proxy=proxy_addr) as response:
 
                 body, status, response_url = await response.text(), response.status, response.url
                 self._parse_response(status, response_url, password)
