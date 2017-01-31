@@ -5,10 +5,12 @@ import aiohttp
 import sys
 import random
 import os
+import time
 
 from netbruter.arguments import argument_parsing
 from netbruter.tor import get_tor_connector, parse_proxy_address
 from netbruter.user_agent import get_user_agents
+from netbruter.formatting import format_time
 from copy import copy
 
 try:
@@ -36,6 +38,7 @@ class Netbrute:
         self.runned_passwords = set()
         self.old_passwds = set()
         self.restore_files = []
+        self.start_time = time.time()
 
         # Statuses set of settings
         self.loaded_passwords = None
@@ -129,10 +132,16 @@ class Netbrute:
             f.write(data)
         return
 
+    def _estimated_time(self):
+        elapsed_time = time.time() - self.start_time
+        pass_amount = self.tried_passwords
+        estimated_time = elapsed_time * (self.max_passwords / pass_amount)
+        return "%10s" % format_time(estimated_time)
+
     def _report_status(self):
         pass_amount = (self.max_passwords - self.loaded_passwords) + self.tried_passwords
-        prctg = "%15.2f%%" % (pass_amount / float(self.max_passwords) * 100)
-        sys.stdout.write("\rPROGRESS: {0}".format(prctg))
+        prctg = "%10.2f%%" % (pass_amount / float(self.max_passwords) * 100)
+        sys.stdout.write("\rPROGRESS: {0} | ETA: {1}".format(prctg, self._estimated_time()))
         sys.stdout.flush()
 
     def _parse_response(self, status, response_url, passwd):
