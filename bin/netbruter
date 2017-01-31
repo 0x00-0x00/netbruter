@@ -122,6 +122,7 @@ class Netbrute:
             i += 1
         return pl
 
+    @asyncio.coroutine
     def _adjust_payload(self, password):
         tmp_payload = copy(self.payload)
         for key in tmp_payload:
@@ -203,7 +204,12 @@ class Netbrute:
 
     @asyncio.coroutine
     def work(self):
-        while not self.queue.empty() or self.found.is_set():
+        while not self.queue.empty():
+
+            #  Force empty the queue.
+            if self.found.is_set():
+                self.queue = Queue()
+
             password = yield from self.queue.get()
             yield from self.attack_this(password)
             self.queue.task_done()
