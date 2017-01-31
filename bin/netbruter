@@ -130,6 +130,11 @@ class Netbrute:
         return pl
 
     def _adjust_payload(self, password):
+        """
+        Creates a copy from payload supplied by user, then formats it with attack data.
+        :param password: String
+        :return: tmp_payload: String
+        """
         tmp_payload = copy(self.payload)
         for key in tmp_payload:
             value = tmp_payload[key]
@@ -139,18 +144,35 @@ class Netbrute:
 
     @staticmethod
     def _store_data(fn, data):
+        """
+        Stores buffer of data into a file and adds a new line at the end of it.
+        :param fn: String => Filename for a file
+        :param data: String => Data buffer
+        :return: None
+        """
         data += "\n"
         with open(fn, "a") as f:
             f.write(data)
         return
 
     def _increment_progress_bar(self):
+        """
+        Check if one second has passed since last report, then renewal the progress bar with current attack progress
+        :return: None
+        """
         if (time.time() - self.last_report_time) < 1:
             return
         self.last_report_time = time.time()
         self.progress_bar.update((self.max_passwords - self.loaded_passwords) + self.tried_passwords)
 
     def _parse_response(self, status, response_url, passwd):
+        """
+        Parses the response packet based on http status code andresponse URL
+        :param status: Integer => HTTP status code
+        :param response_url: String => Request URL response
+        :param passwd: String => Password that originated this response
+        :return: None
+        """
         if status == 200 and self.error_string in response_url:
             self.tried_passwords += 1
             self.runned_passwords.add(passwd)
@@ -167,6 +189,11 @@ class Netbrute:
         return
 
     async def attack_this(self, password):
+        """
+        Perform IO operation for http request
+        :param password: String => Password used in the attack
+        :return: None
+        """
         if self.debug:
             print("Started attack!")
         headers = {
