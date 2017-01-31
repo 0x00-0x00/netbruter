@@ -38,6 +38,11 @@ class Netbrute:
             self.tor_address = "http://{0}:{1}".format(ip, port)
 
     @staticmethod
+    def _generate_session_name(self):
+        id = hex(random.randint(0, 999999))
+        return "session_{0}.restore".format(id[2:])
+
+    @staticmethod
     def _generate_payload_type(user_input):
         """
         Function responsible for transforming String type into Dictionary type
@@ -83,9 +88,20 @@ class Netbrute:
             f.write(password + "\n")
         return
 
+    @staticmethod
+    def _store_data(fn, data):
+        data += "\n"
+        with open(fn, "a") as f:
+            f.write(data)
+        return
+
+
     def _parse_response(self, status, response_url, passwd):
         if status == 200 and self.error_string in response_url:
             self.runned_passwords.add(passwd)
+            if len(self.runned_passwords) % 100 == 0:
+
+
         elif status == 200 and self.error_string not in response_url:
             print("[+] Password was found: {0}".format(passwd))
             self._store_found_password(passwd)
