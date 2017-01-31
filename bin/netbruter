@@ -133,14 +133,16 @@ class Netbrute:
 
     @asyncio.coroutine
     def initiate(self):
-        print("Started initiation!")
+        if self.debug:
+            print("Started initiation!")
         pass_number = self._read_wordlist()
         print("Program have read {0} passwords.".format(pass_number))
         workers = [asyncio.Task(self.work()) for _ in range(10)]
         yield from self.queue.join()
         for w in workers:
             w.cancel()
-        print("Ended initiation!")
+        if self.debug:
+            print("Ended initiation!")
 
 
 if __name__ == "__main__":
