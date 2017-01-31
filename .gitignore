@@ -7,3 +7,9 @@
 *.iml
 out
 gen
+
+# zc00l folders
+netbruter.egg-info/
+dist/
+build/
+tests/
