@@ -24,6 +24,7 @@ def argument_parsing():
                         required=True, type=str)
     parser.add_argument("--tor", action="store_true")
     parser.add_argument("--tor-address", type=str, help="Tor proxy address and port separated by ':'")
+    parser.add_argument("--debug", action="store_true", help="Enable debug log messages")
 
     #  Parse the arguments.
     args = parser.parse_args()
