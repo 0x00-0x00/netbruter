@@ -2,11 +2,12 @@
 import asyncio
 import async_timeout
 import aiohttp
-import json
 import sys
+import random
 
 from netbruter.arguments import argument_parsing
 from netbruter.tor import get_tor_connector, parse_proxy_address
+from netbruter.user_agent import get_user_agents
 from copy import copy
 
 try:
@@ -83,7 +84,7 @@ class Netbrute:
         print("Started attack!")
         headers = {
             "content-type": "application/x-www-form-urlencoded",
-            "User-Agent": ua.random,
+            "User-Agent": random.choice(ua),
         }
         custom_payload = self._adjust_payload(password)
         with async_timeout.timeout(10):
@@ -131,12 +132,14 @@ class Netbrute:
 
 
 if __name__ == "__main__":
-    try:
-        ua = UserAgent()
-    except FakeUserAgentError:
-        print("[!] Error generating fake user-agents.")
-        pass
 
+    #  Load user agents
+    ua = get_user_agents()
+    if not ua:
+        print("[!] Could not get any valid user agent")
+        sys.exit(-1)
+
+    #  asyncio loop
     loop = asyncio.get_event_loop()
     args = argument_parsing()
     if not args:
