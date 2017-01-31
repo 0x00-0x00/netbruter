@@ -1,6 +1,8 @@
 import json
+import os
 
-json_file = "agent_list.json"
+folder = os.path.dirname(__file__) + os.sep
+json_file = folder + "agent_list.json"
 
 
 def get_user_agents():
