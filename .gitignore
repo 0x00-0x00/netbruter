@@ -13,3 +13,4 @@ netbruter.egg-info/
 dist/
 build/
 tests/
+*.restore

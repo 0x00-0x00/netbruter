@@ -1,4 +1,4 @@
+progressbar2
 async_timeout
 aiohttp
 aiosocks
-fake-useragent
