@@ -80,7 +80,7 @@ class Netbrute:
     @staticmethod
     def _store_found_password(password):
         with open("correct.pass", "a") as f:
-            f.write(password)
+            f.write(password + "\n")
         return
 
     def _parse_response(self, status, response_url, passwd):
