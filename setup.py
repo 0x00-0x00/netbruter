@@ -9,6 +9,13 @@ setup(name='netbruter',
       license='MIT',
       packages=['netbruter'],
       package_dir={"netbruter": "src"},
-      package_data={"netbruter": ["src/*"]},
+      package_data={
+          "netbruter": ["src/*"],
+      },
+
+      data_files=[
+          ('netbruter', ['src/agent_list.json']),
+      ],
+
       scripts=['bin/netbruter'],
       zip_safe=False)
