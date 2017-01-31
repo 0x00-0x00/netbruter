@@ -41,6 +41,7 @@ class Netbrute:
         self.loaded_passwords = None
         self.tried_passwords = 0
         self.error_passwords = 0
+        self.max_passwords = 0
 
         # Tor set of settings
         if self.tor_use is not None and tor_address is not None:
@@ -129,7 +130,8 @@ class Netbrute:
         return
 
     def _report_status(self):
-        prctg = "%15.2f%%" % (self.tried_passwords / float(self.loaded_passwords) * 100)
+        pass_amount = (self.max_passwords - self.loaded_passwords) + self.tried_passwords
+        prctg = "%15.2f%%" % (pass_amount / float(self.max_passwords) * 100)
         sys.stdout.write("\rPROGRESS: {0}".format(prctg))
         sys.stdout.flush()
 
@@ -186,6 +188,7 @@ class Netbrute:
         parsed_list = self._parse_wordlist(tmp_list)
         for element in parsed_list:
             self.queue.put_nowait(element)
+        self.max_passwords = len(tmp_list)
         self.loaded_passwords = len(parsed_list)
         return len(parsed_list)
 
@@ -201,7 +204,7 @@ class Netbrute:
         if self.debug:
             print("Started initiation!")
         pass_number = self._read_wordlist()
-        print("\n[*] Program have read {0} passwords.".format(pass_number))
+        print("\n[*] Program have read {0} passwords.\n".format(pass_number))
         workers = [asyncio.Task(self.work()) for _ in range(10)]
         yield from self.queue.join()
         for w in workers:
