@@ -56,7 +56,7 @@ class Netbrute:
             self.session_name = self._generate_session_name()
 
     def _load_old_session(self, fn):
-        question = input("[*] Do you want to load passwords from file '{0}'? [y/N]".format(os.path.basename(fn)))
+        question = input("\n[*] Do you want to load passwords from file '{0}'? [y/N]".format(os.path.basename(fn)))
         if question.upper() == "Y":
             with open(fn, "r") as f:
                 for line in f.readlines():
@@ -141,7 +141,7 @@ class Netbrute:
                 [self._store_data(self.session_name, x) for x in self.runned_passwords]
                 self.runned_passwords.clear()
         elif status == 200 and self.error_string not in response_url:
-            print("[+] Password was found: {0}".format(passwd))
+            print("\n[+] Password was found: {0}".format(passwd))
             self._store_data("correct.pass", passwd)
             self.found.set()
         elif status != 200:
@@ -168,7 +168,7 @@ class Netbrute:
                 body, status, response_url = await response.text(), response.status, response.url
                 self._parse_response(status, response_url, password)
 
-                if not self.debug and self.tried_passwords % 100 == 0:
+                if self.debug is False and self.tried_passwords % 100 == 0:
                     self._report_status()
 
                 if self.debug:
@@ -201,7 +201,7 @@ class Netbrute:
         if self.debug:
             print("Started initiation!")
         pass_number = self._read_wordlist()
-        print("Program have read {0} passwords.".format(pass_number))
+        print("\n[*] Program have read {0} passwords.".format(pass_number))
         workers = [asyncio.Task(self.work()) for _ in range(10)]
         yield from self.queue.join()
         for w in workers:
