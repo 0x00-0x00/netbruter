@@ -10,7 +10,7 @@ import time
 from netbruter.arguments import argument_parsing
 from netbruter.tor import get_tor_connector, parse_proxy_address
 from netbruter.user_agent import get_user_agents
-from netbruter.formatting import
+from netbruter.formatting import format_time
 from netbruter.header import program_header
 from copy import copy
 from progressbar import ProgressBar, Bar, Counter, Percentage, AdaptiveETA, RotatingMarker
