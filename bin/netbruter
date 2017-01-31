@@ -4,6 +4,7 @@ import async_timeout
 import aiohttp
 import sys
 import random
+import os
 
 from netbruter.arguments import argument_parsing
 from netbruter.tor import get_tor_connector, parse_proxy_address
@@ -32,15 +33,46 @@ class Netbrute:
         self.found = Event()
         self.tor_use = tor
         self.debug = debug
+        self.session_name = self._generate_session_name()
         self.runned_passwords = set()
+        self.old_passwds = set()
+        self.restore_files = []
+
+        # Tor set of settings
         if self.tor_use is not None and tor_address is not None:
             ip, port = parse_proxy_address(tor_address)
             self.tor_address = "http://{0}:{1}".format(ip, port)
 
+        # Restore file set of settings
+        if self._search_open_sesssion() > 0:
+            for file in self.restore_files:
+                if self._load_old_session(file) is True:
+                    break
+
+    def _load_old_session(self, fn):
+        question = input("[*] Do you want to load passwords from file '{0}'? [y/N]".format(fn))
+        if question.upper() == "Y":
+            with open(fn, "r") as f:
+                for line in f.readlines():
+                    line = line.replace("\n", "")
+                    self.old_passwds.add(line)
+            return True
+        else:
+            return False
+
+    def _search_open_sesssion(self):
+        current_dir = os.getcwd() + os.sep()
+        for root, dirc, files in os.walk(current_dir):
+            for f in files:
+                if f.endswith(".restore"):
+                    file_path = os.path.join(dirc, f)
+                    self.restore_files.append(file_path)
+        return len(self.restore_files)
+
     @staticmethod
-    def _generate_session_name(self):
-        id = hex(random.randint(0, 999999))
-        return "session_{0}.restore".format(id[2:])
+    def _generate_session_name():
+        _id = hex(random.randint(0, 999999))
+        return "session_{0}.restore".format(_id[2:])
 
     @staticmethod
     def _generate_payload_type(user_input):
@@ -83,28 +115,21 @@ class Netbrute:
         return tmp_payload
 
     @staticmethod
-    def _store_found_password(password):
-        with open("correct.pass", "a") as f:
-            f.write(password + "\n")
-        return
-
-    @staticmethod
     def _store_data(fn, data):
         data += "\n"
         with open(fn, "a") as f:
             f.write(data)
         return
 
-
     def _parse_response(self, status, response_url, passwd):
         if status == 200 and self.error_string in response_url:
             self.runned_passwords.add(passwd)
             if len(self.runned_passwords) % 100 == 0:
-
-
+                [self._store_data(self.session_name, x) for x in self.runned_passwords]
+                self.runned_passwords.clear()
         elif status == 200 and self.error_string not in response_url:
             print("[+] Password was found: {0}".format(passwd))
-            self._store_found_password(passwd)
+            self._store_data("correct.pass", passwd)
             self.found.set()
         elif status != 200:
             print("[!] Incompatible status code: {0} | URL: {1}".format(status, response_url))
@@ -132,13 +157,16 @@ class Netbrute:
                     print("Ended attack! [{0}] - Status: {1} - URL: {2}".format(password, status, response_url))
                 return
 
+    def _parse_wordlist(self, iterable):
+        return list(filter(lambda x: x not in self.old_passwds, iterable))
+
     def _read_wordlist(self):
-        i = 0
+        tmp_list = []
         with open(self.wordlist, "r") as f:
             for line in f.readlines():
-                self.queue.put_nowait(line.replace("\n", ""))
-                i += 1
-        return i
+                tmp_list.append(line.replace("\n", ""))
+        parsed_list = self._parse_wordlist(tmp_list)
+        return len(parsed_list)
 
     @asyncio.coroutine
     def work(self):
