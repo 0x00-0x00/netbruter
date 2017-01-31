@@ -33,7 +33,6 @@ class Netbrute:
         self.found = Event()
         self.tor_use = tor
         self.debug = debug
-        self.session_name = self._generate_session_name()
         self.runned_passwords = set()
         self.old_passwds = set()
         self.restore_files = []
@@ -43,29 +42,32 @@ class Netbrute:
             ip, port = parse_proxy_address(tor_address)
             self.tor_address = "http://{0}:{1}".format(ip, port)
 
-        # Restore file set of settings
+        # Session set of settings
         if self._search_open_sesssion() > 0:
             for file in self.restore_files:
                 if self._load_old_session(file) is True:
                     break
+        else:
+            self.session_name = self._generate_session_name()
 
     def _load_old_session(self, fn):
-        question = input("[*] Do you want to load passwords from file '{0}'? [y/N]".format(fn))
+        question = input("[*] Do you want to load passwords from file '{0}'? [y/N]".format(os.path.basename(fn)))
         if question.upper() == "Y":
             with open(fn, "r") as f:
                 for line in f.readlines():
                     line = line.replace("\n", "")
                     self.old_passwds.add(line)
+            self.session_name = os.path.basename(fn)
             return True
         else:
             return False
 
     def _search_open_sesssion(self):
-        current_dir = os.getcwd() + os.sep()
+        current_dir = os.getcwd() + os.sep
         for root, dirc, files in os.walk(current_dir):
             for f in files:
                 if f.endswith(".restore"):
-                    file_path = os.path.join(dirc, f)
+                    file_path = os.path.join(root, f)
                     self.restore_files.append(file_path)
         return len(self.restore_files)
 
@@ -166,6 +168,8 @@ class Netbrute:
             for line in f.readlines():
                 tmp_list.append(line.replace("\n", ""))
         parsed_list = self._parse_wordlist(tmp_list)
+        for element in parsed_list:
+            self.queue.put_nowait(element)
         return len(parsed_list)
 
     @asyncio.coroutine
