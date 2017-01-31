@@ -24,8 +24,9 @@ class Netbrute:
     """
     Main program class
     """
-    def __init__(self, aiohttp_session, target_url, payload_model, wordlist, error_string, tor=None, tor_address=None,
+    def __init__(self, aiohttp_session, target_url, payload_model, wordlist, error_string, tasks, tor=None, tor_address=None,
                  debug=None):
+        self.max_tasks = tasks
         self.queue = Queue()
         self.attack_url = target_url
         self.error_string = error_string
@@ -214,7 +215,7 @@ class Netbrute:
             print("Started initiation!")
         pass_number = self._read_wordlist()
         print("\n[*] Program have read {0} passwords.\n".format(pass_number))
-        workers = [asyncio.Task(self.work()) for _ in range(10)]
+        workers = [asyncio.Task(self.work()) for _ in range(self.max_tasks)]
         yield from self.queue.join()
         for w in workers:
             w.cancel()
@@ -245,6 +246,6 @@ if __name__ == "__main__":
     else:
         session = aiohttp.ClientSession(loop=loop)
 
-    net = Netbrute(session, args.url, args.payload, args.wordlist, args.error_string,
+    net = Netbrute(session, args.url, args.payload, args.wordlist, args.error_string, args.tasks,
                    tor=args.tor, tor_address=args.tor_address, debug=args.debug)
     loop.run_until_complete(net.initiate())
