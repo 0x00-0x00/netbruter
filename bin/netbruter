@@ -37,6 +37,11 @@ class Netbrute:
         self.old_passwds = set()
         self.restore_files = []
 
+        # Statuses set of settings
+        self.loaded_passwords = None
+        self.tried_passwords = 0
+        self.error_passwords = 0
+
         # Tor set of settings
         if self.tor_use is not None and tor_address is not None:
             ip, port = parse_proxy_address(tor_address)
@@ -123,8 +128,14 @@ class Netbrute:
             f.write(data)
         return
 
+    def _report_status(self):
+        prctg = "%15.2f%%" % (self.tried_passwords / float(self.loaded_passwords))
+        sys.stdout.write("\rPROGRESS: {0}".format(prctg))
+        sys.stdout.flush()
+
     def _parse_response(self, status, response_url, passwd):
         if status == 200 and self.error_string in response_url:
+            self.tried_passwords += 1
             self.runned_passwords.add(passwd)
             if len(self.runned_passwords) % 100 == 0:
                 [self._store_data(self.session_name, x) for x in self.runned_passwords]
@@ -134,6 +145,7 @@ class Netbrute:
             self._store_data("correct.pass", passwd)
             self.found.set()
         elif status != 200:
+            self.error_passwords += 1
             print("[!] Incompatible status code: {0} | URL: {1}".format(status, response_url))
         return
 
@@ -155,6 +167,10 @@ class Netbrute:
 
                 body, status, response_url = await response.text(), response.status, response.url
                 self._parse_response(status, response_url, password)
+
+                if not self.debug and self.tried_passwords % 100 == 0:
+                    self._report_status()
+
                 if self.debug:
                     print("Ended attack! [{0}] - Status: {1} - URL: {2}".format(password, status, response_url))
                 return
@@ -170,6 +186,7 @@ class Netbrute:
         parsed_list = self._parse_wordlist(tmp_list)
         for element in parsed_list:
             self.queue.put_nowait(element)
+        self.loaded_passwords = len(parsed_list)
         return len(parsed_list)
 
     @asyncio.coroutine
