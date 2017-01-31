@@ -10,7 +10,8 @@ import time
 from netbruter.arguments import argument_parsing
 from netbruter.tor import get_tor_connector, parse_proxy_address
 from netbruter.user_agent import get_user_agents
-from netbruter.formatting import format_time
+from netbruter.formatting import
+from netbruter.header import program_header
 from copy import copy
 from progressbar import ProgressBar, Bar, Counter, Percentage, AdaptiveETA, RotatingMarker
 
@@ -225,8 +226,10 @@ class Netbrute:
             self.session = aiohttp.ClientSession(loop=loop)
 
         #  Graphical visualization of attack status
-        self.progress_bar = ProgressBar(widgets=["Guesses: ", Counter(), "/", str(self.max_passwords), " [", Percentage(),
-                                                 "] ", Bar(marker=RotatingMarker()), " ", AdaptiveETA()], maxval=self.max_passwords).start()
+        self.progress_bar = ProgressBar(widgets=["Guesses: ", Counter(), "/",
+                                                 str(self.max_passwords), " [", Percentage(), "] ",
+                                                 Bar(marker=RotatingMarker()), " ", AdaptiveETA()],
+                                        maxval=self.max_passwords).start()
         self.progress_bar.update(self.max_passwords - pass_number)
 
         #  Now the code to run the tasks and execute the async requests
@@ -239,6 +242,7 @@ class Netbrute:
 
 
 if __name__ == "__main__":
+    print(program_header)
     #  Load user agents
     ua = get_user_agents()
     if not ua:
