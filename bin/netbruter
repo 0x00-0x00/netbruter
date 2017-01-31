@@ -8,7 +8,6 @@ import sys
 from netbruter.arguments import argument_parsing
 from netbruter.tor import get_tor_connector, parse_proxy_address
 from copy import copy
-from fake_useragent import UserAgent, FakeUserAgentError
 
 try:
     from asyncio import JoinableQueue as Queue
@@ -88,7 +87,7 @@ class Netbrute:
         }
         custom_payload = self._adjust_payload(password)
         with async_timeout.timeout(10):
-            if self.tor_use is not None:
+            if self.tor_use is True:
                 proxy_addr = self.tor_address
             else:
                 proxy_addr = None
