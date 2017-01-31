@@ -216,6 +216,14 @@ class Netbrute:
         pass_number = self._read_wordlist()
         print("\n[*] Program have read {0} passwords.\n".format(pass_number))
 
+        #  Adjust session object and tor usage information
+        if self.tor_use is True:
+            print("[+] Using tor with address {0}\n".format(args.tor_address))
+            conn = get_tor_connector(args.tor_address)
+            self.session = aiohttp.ClientSession(loop=loop, connector=conn)
+        else:
+            self.session = aiohttp.ClientSession(loop=loop)
+
         #  Graphical visualization of attack status
         self.progress_bar = ProgressBar(widgets=["Guesses: ", Counter(), "/", str(self.max_passwords), " [", Percentage(),
                                                  "] ", Bar(marker=RotatingMarker()), " ", AdaptiveETA()], maxval=self.max_passwords).start()
@@ -245,13 +253,6 @@ if __name__ == "__main__":
     if not args:
         sys.exit(0)
 
-    if args.tor:
-        print("[+] Using tor with address {0}".format(args.tor_address))
-        conn = get_tor_connector(args.tor_address)
-        session = aiohttp.ClientSession(loop=loop, connector=conn)
-    else:
-        session = aiohttp.ClientSession(loop=loop)
-
-    net = Netbrute(session, args.url, args.payload, args.wordlist, args.error_string, args.tasks,
+    net = Netbrute(None, args.url, args.payload, args.wordlist, args.error_string, args.tasks,
                    tor=args.tor, tor_address=args.tor_address, debug=args.debug)
     loop.run_until_complete(net.initiate())
