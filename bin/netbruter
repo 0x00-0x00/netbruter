@@ -142,6 +142,8 @@ if __name__ == "__main__":
     #  asyncio loop
     loop = asyncio.get_event_loop()
     args = argument_parsing()
+
+    #  Check arguments
     if not args:
         sys.exit(0)
 
