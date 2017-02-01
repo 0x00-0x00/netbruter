@@ -279,10 +279,7 @@ class Netbrute:
             self.session = aiohttp.ClientSession(loop=loop)
 
         #  Graphical visualization of attack status
-        self.progress_bar = ProgressBar(widgets=["Guesses: ", Counter(), "/",
-                                                 str(self.max_passwords), " [", Percentage(), "] ",
-                                                 Bar(marker="▓"), " ", AdaptiveETA()],
-                                        maxval=self.max_passwords).start()
+        self.progress_bar = ProgressBar(widgets=["Guesses: ", Counter(), "/", str(self.max_passwords), " [", Percentage(), "] ", Bar(marker="▓"), " ", AdaptiveETA()], maxval=self.max_passwords).start()
         self.progress_bar.update(self.max_passwords - pass_number)
 
         #  Now the code to run the tasks and execute the async requests
