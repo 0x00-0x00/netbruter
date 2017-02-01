@@ -1,0 +1,273 @@
+commit 7421ef4f78e043ae2a2abae535b5a2bc0af90965
+Author: shemhazai <andre.marques@fatec.sp.gov.br>
+Date:   Tue Jan 31 21:36:49 2017 -0200
+
+    New version
+
+commit 4aba159b2863844e33cf3a47a2f55382e9a0358b
+Author: shemhazai <andre.marques@fatec.sp.gov.br>
+Date:   Tue Jan 31 21:16:08 2017 -0200
+
+    Commented some functions to be more readable.
+
+commit 078ddf2a24f66c47e3fe99a7e235f1ca3ee7b478
+Author: shemhazai <andre.marques@fatec.sp.gov.br>
+Date:   Tue Jan 31 21:11:20 2017 -0200
+
+    Queue throw away after found password; removed unused imports from code; some other fixes.
+
+commit a905c77e7319afd2fa1b6ed00ae48031a10364d2
+Author: shemhazai <andre.marques@fatec.sp.gov.br>
+Date:   Tue Jan 31 20:57:27 2017 -0200
+
+    Found event() checkage for work function
+
+commit da09b77e90af3776b01855c189695f9dfaa3d477
+Author: 0x00-0x00 <andre.marques@fatec.sp.gov.br>
+Date:   Tue Jan 31 16:56:54 2017 -0200
+
+    Fixed accident with import
+
+commit 0f832311d1959a5ca5d3ddc6d244727384033b4f
+Author: 0x00-0x00 <andre.marques@fatec.sp.gov.br>
+Date:   Tue Jan 31 16:56:28 2017 -0200
+
+    Changed program version to 0.1.0
+
+commit 3264feb6073205967c369446ce2f68aa99a8873c
+Author: 0x00-0x00 <andre.marques@fatec.sp.gov.br>
+Date:   Tue Jan 31 16:56:16 2017 -0200
+
+    Added code to print program header
+
+commit 63521cb13ccaaf2dcdbcb134024a801bd064f40c
+Author: 0x00-0x00 <andre.marques@fatec.sp.gov.br>
+Date:   Tue Jan 31 16:55:27 2017 -0200
+
+    Added a program header
+
+commit e27288237b09df6814e58a8fe3b0d4c1bc6f0557
+Author: 0x00-0x00 <andre.marques@fatec.sp.gov.br>
+Date:   Tue Jan 31 16:39:55 2017 -0200
+
+    Changed the way the aiohttp session is constructed in a way that the Warning of creating a session outside an asyncio coroutine no longer happens
+
+commit 9d0e7fb7a9f51b8e486b5f990d3a020c800922c3
+Author: 0x00-0x00 <andre.marques@fatec.sp.gov.br>
+Date:   Tue Jan 31 16:32:33 2017 -0200
+
+    Added progressbar2 module and removed self-desgined progressbar code
+
+commit c47781f2482cdaa9b694758af689e14e9defc242
+Author: 0x00-0x00 <andre.marques@fatec.sp.gov.br>
+Date:   Tue Jan 31 12:59:15 2017 -0200
+
+    Added code to support --tasks argument
+
+commit c9b12487bc294dce30a8d186600646906ddfdb5b
+Author: 0x00-0x00 <andre.marques@fatec.sp.gov.br>
+Date:   Tue Jan 31 12:57:58 2017 -0200
+
+    Added --tasks option to the program
+
+commit a3f83f6c6e138a94f674968170bbce91e4a6c89a
+Merge: eeffa2c 4a34f6d
+Author: shemhazai <andre.marques@fatec.sp.gov.br>
+Date:   Tue Jan 31 12:33:56 2017 -0200
+
+    Merge branch 'master' of https://github.com/0x00-0x00/netbruter into oh-fuck
+
+commit eeffa2cb7dc7f88996acc940eb5106a385189721
+Author: shemhazai <andre.marques@fatec.sp.gov.br>
+Date:   Tue Jan 31 12:33:24 2017 -0200
+
+    Missing Commit
+
+commit 4a34f6dea9c6e6a665850d87fc74373cb5d62925
+Author: 0x00-0x00 <andre.marques@fatec.sp.gov.br>
+Date:   Tue Jan 31 11:52:54 2017 -0200
+
+    Added new folders to .gitignore
+
+commit d316aef30013e999f3455d56db6e3b77a78e49ff
+Author: shemhazai <andre.marques@fatec.sp.gov.br>
+Date:   Tue Jan 31 11:11:46 2017 -0200
+
+    time formatting code for ETA reporting
+
+commit 3648dbc4768658ddb79bb035f22d0ddaef48b191
+Author: shemhazai <andre.marques@fatec.sp.gov.br>
+Date:   Tue Jan 31 10:41:33 2017 -0200
+
+    Changed way to track progress to correctly display how much of the attack has been run.
+
+commit f64d8ede3ad2b79e1218e9b4d0ceb550fe101ee8
+Author: shemhazai <andre.marques@fatec.sp.gov.br>
+Date:   Tue Jan 31 10:37:40 2017 -0200
+
+    Added *100 to triedPassword/maximumPasswords to correctly display percentage
+
+commit b46376037c2b799b8b73fdffb0e541915acfec5b
+Author: shemhazai <andre.marques@fatec.sp.gov.br>
+Date:   Tue Jan 31 10:35:46 2017 -0200
+
+    Fixed condition to run reporting code
+
+commit 4e3d808252a4d9a44dfee9a1f109135adc25aadc
+Author: shemhazai <andre.marques@fatec.sp.gov.br>
+Date:   Tue Jan 31 10:33:57 2017 -0200
+
+    Added report status for non-debug runs
+
+commit 2be4a2b88cd3b9b7a04da3646d3e6cf546f27824
+Author: shemhazai <andre.marques@fatec.sp.gov.br>
+Date:   Tue Jan 31 10:07:52 2017 -0200
+
+    Added feature: Restore files and sessions
+
+commit 2f0f2b18fe428cbfc00590be0a340ead26a1ed98
+Author: shemhazai <andre.marques@fatec.sp.gov.br>
+Date:   Tue Jan 31 09:23:59 2017 -0200
+
+    Added new features about restoring old sessions
+
+commit 6d67b1d2ff62dffefae3468d94ebe8ab11ef28c4
+Author: shemhazai <andre.marques@fatec.sp.gov.br>
+Date:   Tue Jan 31 09:02:42 2017 -0200
+
+    Added session generation code
+
+commit 461d4687f2e9e0b3a5169c8ed9128dbc7970c729
+Author: shemhazai <andre.marques@fatec.sp.gov.br>
+Date:   Tue Jan 31 08:58:26 2017 -0200
+
+    Added gitignore
+
+commit c4a2c68f0cf4fbdee30a22ecccd0e89eba68bb9e
+Author: shemhazai <andre.marques@fatec.sp.gov.br>
+Date:   Tue Jan 31 08:58:13 2017 -0200
+
+    Removed format function and inserted raw variable into the argument
+
+commit 4b33c5b519e9d69d593737523e7b9c9a6d05fcc0
+Author: shemhazai <andre.marques@fatec.sp.gov.br>
+Date:   Tue Jan 31 08:57:18 2017 -0200
+
+    Added json file into setup.py
+
+commit 6c893ef857bdae1e60937a225cedaf52a8e2b969
+Author: shemhazai <andre.marques@fatec.sp.gov.br>
+Date:   Tue Jan 31 08:47:04 2017 -0200
+
+    Added code to get the full path of JSON file
+
+commit d93af8e92118af96c689b66cbd4a70423cc45292
+Author: shemhazai <andre.marques@fatec.sp.gov.br>
+Date:   Tue Jan 31 08:44:41 2017 -0200
+
+    Added new line into _store_found_password()
+
+commit afef1ea5160d67cf17cb4b18233d8fb41deafdce
+Author: shemhazai <andre.marques@fatec.sp.gov.br>
+Date:   Tue Jan 31 08:44:04 2017 -0200
+
+    Added debug conditionals for debug argument
+
+commit 3b2940c71c6902bad7cce65e2c0219fcbc8fae5a
+Author: shemhazai <andre.marques@fatec.sp.gov.br>
+Date:   Tue Jan 31 08:43:11 2017 -0200
+
+    Refactored response parsing into separate function
+
+commit f15545b1d6274851d727c0b892c1d789dac15ade
+Author: shemhazai <andre.marques@fatec.sp.gov.br>
+Date:   Tue Jan 31 08:35:36 2017 -0200
+
+    Added comments
+
+commit 00df803522d3f1c579b59a778f2ee5acdfed571e
+Author: shemhazai <andre.marques@fatec.sp.gov.br>
+Date:   Tue Jan 31 08:34:10 2017 -0200
+
+    Added debugging option to arguments
+
+commit 9542f64ff5c89696621c78255359bd55e7536441
+Author: shemhazai <andre.marques@fatec.sp.gov.br>
+Date:   Tue Jan 31 08:33:00 2017 -0200
+
+    Added code for User-Agent module
+
+commit 31f1c49865160310bf0251afdee87ba9643424a5
+Author: shemhazai <andre.marques@fatec.sp.gov.br>
+Date:   Tue Jan 31 08:31:03 2017 -0200
+
+    Added set length checkage
+
+commit f4cc21aa5ad1fb649255738ba8e69914d8fa879f
+Author: shemhazai <andre.marques@fatec.sp.gov.br>
+Date:   Tue Jan 31 08:29:27 2017 -0200
+
+    Changed 'if self.tor_use is not None' to 'if self.tor_use is True'
+
+commit 6d62acd167c2533c19c583df74bd06c56fd064c3
+Author: shemhazai <andre.marques@fatec.sp.gov.br>
+Date:   Tue Jan 31 08:28:36 2017 -0200
+
+    Created user_agent module with function to retrieve user agents from json file
+
+commit 9ff4d2a36f017987d420ed18215455d51c9fd12b
+Author: shemhazai <andre.marques@fatec.sp.gov.br>
+Date:   Tue Jan 31 08:16:55 2017 -0200
+
+    Added user agent database file JSON encoded
+
+commit a3e99a1fb1047ebad7f664853a228758313b25a6
+Author: 0x00-0x00 <andre.marques@fatec.sp.gov.br>
+Date:   Mon Jan 30 17:53:36 2017 -0200
+
+    First alpha release for testing
+
+commit a4e27d38deeb97812a7263f5ad4b8e95425ba427
+Author: 0x00-0x00 <andre.marques@fatec.sp.gov.br>
+Date:   Mon Jan 30 17:31:02 2017 -0200
+
+    Removed unwanted files
+
+commit 8910643d4e484f38359122f1ec9e700cd244c38a
+Author: 0x00-0x00 <andre.marques@fatec.sp.gov.br>
+Date:   Mon Jan 30 17:30:22 2017 -0200
+
+    New commit
+
+commit 1b1fb7d23de0376445d24362b68e3798bb3d8bcd
+Author: 0x00-0x00 <andre.marques@fatec.sp.gov.br>
+Date:   Mon Jan 30 17:18:34 2017 -0200
+
+    Adjusted code to be tor-compatible but not enforced
+
+commit 7c3483c61b11ecfaa631f9663e78481b420dfcf5
+Author: 0x00-0x00 <andre.marques@fatec.sp.gov.br>
+Date:   Mon Jan 30 17:16:18 2017 -0200
+
+    Changed x for _ to be PEP-friendly
+
+commit 9512762274d4d7bb8dd7a3589c77f93a58bee60a
+Author: 0x00-0x00 <andre.marques@fatec.sp.gov.br>
+Date:   Mon Jan 30 17:15:46 2017 -0200
+
+    Added tor.py into module;
+    Created function generate_credentials()
+    Created function parse_proxy_address()
+    Created function get_tor_connector()
+
+commit d61da614952099f0c5335c2828779502e09a0785
+Author: 0x00-0x00 <andre.marques@fatec.sp.gov.br>
+Date:   Mon Jan 30 16:50:14 2017 -0200
+
+    Changed netbruter.py to netbruter
+
+commit 1a737861c8b5725b62351a9b3f7c4cbf5e901e2c
+Author: 0x00-0x00 <andre.marques@fatec.sp.gov.br>
+Date:   Mon Jan 30 16:49:53 2017 -0200
+
+    Established project structure
