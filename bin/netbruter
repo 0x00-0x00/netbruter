@@ -18,6 +18,7 @@ from netbruter.arguments import argument_parsing
 from netbruter.tor import get_tor_connector, parse_proxy_address
 from netbruter.user_agent import get_user_agents
 from netbruter.header import program_header
+from netbruter.argv import retrieve_command_line
 from copy import copy
 # noinspection PyPackageRequirements
 from progressbar import ProgressBar, Bar, Counter, Percentage, AdaptiveETA, RotatingMarker
@@ -210,7 +211,8 @@ class Netbrute:
         async with self.session.post(self.attack_url, data=self._encode_payload_www(custom_payload),
                                      headers=headers, proxy=proxy_addr) as response:
 
-            body, status, response_url = await response.text(), response.status, response.url
+            status, response_url = await response.status, response.url
+
             self._parse_response(status, response_url, password)
 
             if self.debug is False:
@@ -218,7 +220,7 @@ class Netbrute:
 
             if self.debug:
                 print("Ended attack! [{0}] - Status: {1} - URL: {2}".format(password, status, response_url))
-            return
+        return
 
     def _parse_wordlist(self, iterable):
         return list(filter(lambda x: x not in self.old_passwds, iterable))
