@@ -1,7 +1,13 @@
 var http = require('http');
 var url = require('url');
+var fs = require('fs');
+var process = require('process');
+
+var devNull = fs.createWriteStream('/dev/null');
+process.stderr.write = devNull.write.bind(devNull);
+
 http.createServer(function(request, response) {
-      console.log(request.method + " " + request.url);
+      console.log(request.method + " " + request.url + "\n");
       var url_parts = url.parse(request.url);
       var proxy = http.createClient(80, request.headers['host'])
       var proxy_request = proxy.request(request.method, request.url, request.headers);
