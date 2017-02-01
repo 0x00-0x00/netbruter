@@ -13,12 +13,14 @@ import sys
 import random
 import os
 import time
+import gzip
 
 from netbruter.arguments import argument_parsing
 from netbruter.tor import get_tor_connector, parse_proxy_address
 from netbruter.user_agent import get_user_agents
 from netbruter.header import program_header
 from netbruter.resume import restore_script
+from netbruter.compression import CompressFile
 from copy import copy
 # noinspection PyPackageRequirements
 from progressbar import ProgressBar, Bar, Counter, Percentage, AdaptiveETA, RotatingMarker
@@ -65,19 +67,27 @@ class Netbrute:
             self.tor_address = "http://{0}:{1}".format(ip, port)
 
         # Session set of settings
-        if self._search_open_sesssion() > 0:
+        self.session_name = self._generate_session_name()
+        restore_files = self._search_open_sesssion()
+        if restore_files > 0:
             for file in self.restore_files:
                 if self._load_old_session(file) is True:
                     break
         else:
-            self.session_name = self._generate_session_name()
+            pass
 
     def _load_old_session(self, fn):
         question = input("\n[*] Do you want to load passwords from file '{0}'? [y/N] ".format(os.path.basename(fn)))
         if question.upper() == "Y":
-            with open(fn, "r") as f:
-                for line in f.readlines():
-                    line = line.replace("\n", "")
+
+            #  Decompress the data and store it raw
+            with gzip.open(fn, "rb", compresslevel=9) as f:
+                _data = f.read()
+            with open(fn, "wb") as f:
+                f.write(_data)
+            lines = [x.decode() for x in _data.split(b"\n")]
+            for line in lines:
+                if line != "":
                     self.old_passwds.add(line)
             self.session_name = os.path.basename(fn)
             return True
@@ -306,3 +316,8 @@ if __name__ == "__main__":
         loop.run_until_complete(net.initiate())
     except:
         restore_script()
+        if net.session is not None and os.path.isfile(net.session_name):
+            with open(net.session_name, "rb") as f:
+                data = f.read()
+            with gzip.open(net.session_name, "wb", compresslevel=9) as f:
+                f.write(data)
