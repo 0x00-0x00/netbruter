@@ -14,5 +14,9 @@ def restore_script(script_file="resume.sh"):
     data = "#!/bin/bash\n{0}".format(retrieve_command_line())
     with open(script_file, "w") as f:
         f.write(data)
+    try:
+        os.chmod(os.path.abspath(script_file), 755)
+    except:
+        print("[!] Error: Could not change permissions to resume script.")
     print("[+] Resume script generated and stored at '{0}'".format(script_file))
     return True
