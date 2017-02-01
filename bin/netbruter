@@ -211,7 +211,7 @@ class Netbrute:
         async with self.session.post(self.attack_url, data=self._encode_payload_www(custom_payload),
                                      headers=headers, proxy=proxy_addr) as response:
 
-            status, response_url = await response.status, response.url
+            status, response_url = response.status, response.url
 
             self._parse_response(status, response_url, password)
 
@@ -248,11 +248,7 @@ class Netbrute:
 
             #  Retrieve passwords from queue and test them
             password = yield from self.queue.get()
-            try:
-                yield from self.attack_this(password)
-            except:
-                #  Store a resume script to continue attack.
-                restore_script()
+            yield from self.attack_this(password)
             self.queue.task_done()
 
     @asyncio.coroutine
@@ -306,4 +302,7 @@ if __name__ == "__main__":
 
     net = Netbrute(None, args.url, args.payload, args.wordlist, args.error_string, args.tasks,
                    tor=args.tor, tor_address=args.tor_address, debug=args.debug)
-    loop.run_until_complete(net.initiate())
+    try:
+        loop.run_until_complete(net.initiate())
+    except:
+        restore_script()
