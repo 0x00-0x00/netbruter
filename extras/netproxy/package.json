@@ -1,0 +1,7 @@
+{
+  "name": "netproxy",
+  "description": "intercept requests",
+  "dependencies": {
+    "http-proxy": "^1.16.2"
+  }
+}
