@@ -18,7 +18,7 @@ from netbruter.arguments import argument_parsing
 from netbruter.tor import get_tor_connector, parse_proxy_address
 from netbruter.user_agent import get_user_agents
 from netbruter.header import program_header
-from netbruter.argv import retrieve_command_line
+from netbruter.resume import restore_script
 from copy import copy
 # noinspection PyPackageRequirements
 from progressbar import ProgressBar, Bar, Counter, Percentage, AdaptiveETA, RotatingMarker
@@ -248,7 +248,11 @@ class Netbrute:
 
             #  Retrieve passwords from queue and test them
             password = yield from self.queue.get()
-            yield from self.attack_this(password)
+            try:
+                yield from self.attack_this(password)
+            except:
+                #  Store a resume script to continue attack.
+                restore_script()
             self.queue.task_done()
 
     @asyncio.coroutine
