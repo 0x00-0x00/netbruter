@@ -4,7 +4,7 @@ program_header = """
 |                 HTTP-Post Bruteforce Empowered.             |
 |                                                             |
 | Date ......: 2017/01/31                                     |
-| Version ...: 0.1.2                                          |
+| Version ...: 0.1.3                                          |
 | Author ....: zc00l                                          |
 |=============================================================|
 """
