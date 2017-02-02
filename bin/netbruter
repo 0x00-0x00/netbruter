@@ -23,12 +23,8 @@ except ImportError:
 
 
 if __name__ == "__main__":
+    #  Prints the program header
     print(program_header)
-    #  Load user agents
-    ua = get_user_agents()
-    if not ua:
-        print("[!] Could not get any valid user agent")
-        sys.exit(-1)
 
     #  asyncio loop
     loop = asyncio.get_event_loop()
@@ -41,7 +37,9 @@ if __name__ == "__main__":
     try:
         if args.url is not None:
             http_post(args, loop)
-    except AttributeError:
+            print("\n[*] Exitting cleanly...")
+            sys.exit(0)
+    except AttributeError as e:
         pass
 
     print("[+] No mode chosen.")

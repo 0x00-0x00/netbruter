@@ -1,17 +1,11 @@
 import asyncio
 import aiohttp
-import sys
 import random
 import os
 import time
 import gzip
-
-from netbruter.arguments import argument_parsing
 from netbruter.tor import get_tor_connector, parse_proxy_address
 from netbruter.user_agent import get_user_agents
-from netbruter.header import program_header
-from netbruter.resume import restore_script
-from netbruter.compression import CompressFile
 from copy import copy
 # noinspection PyPackageRequirements
 from progressbar import ProgressBar, Bar, Counter, Percentage, AdaptiveETA
@@ -43,6 +37,7 @@ class Netbrute:
         self.old_passwds = set()
         self.restore_files = []
         self.progress_bar = None
+        self.ua = self._prepare_user_agents()
         self.start_time = time.time()
         self.last_report_time = time.time()
 
@@ -66,6 +61,14 @@ class Netbrute:
                     break
         else:
             pass
+
+    @staticmethod
+    def _prepare_user_agents():
+        #  Load user agents
+        ua = get_user_agents()
+        if not ua:
+            raise Exception("No user agents available")
+        return ua
 
     def _load_old_session(self, fn):
         question = input("\n[*] Do you want to load passwords from file '{0}'? [y/N] ".format(os.path.basename(fn)))
@@ -201,7 +204,7 @@ class Netbrute:
             print("Started attack!")
         headers = {
             "content-type": "application/x-www-form-urlencoded",
-            "User-Agent": random.choice(ua),
+            "User-Agent": random.choice(self.ua),
         }
         custom_payload = self._adjust_payload(password)
         # AsyncTimeout removed since commit c47781f
@@ -255,7 +258,7 @@ class Netbrute:
             self.queue.task_done()
 
     @asyncio.coroutine
-    def initiate(self):
+    def initiate(self, loop):
 
         #  Attack preparation phase
         if self.debug:
