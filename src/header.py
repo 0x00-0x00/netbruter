@@ -1,10 +1,10 @@
 program_header = """
 |=============================================================|
 |                          NetBruter                          |
-|                 HTTP-Post Bruteforce Empowered.             |
+|                      Bruteforce Empowered.                  |
 |                                                             |
 | Date ......: 2017/01/31                                     |
-| Version ...: 0.1.4                                          |
+| Version ...: 0.1.5                                          |
 | Author ....: zc00l                                          |
 |=============================================================|
 """
