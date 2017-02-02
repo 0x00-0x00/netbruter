@@ -93,10 +93,15 @@ class Netbrute:
                 with open(fn, "rb") as f:
                     _data = f.read()
 
+            #  Read data from file, decode it from BinaryBuffer to String.
             lines = [x.decode() for x in _data.split(b"\n")]
+
+            #  Finally, add each line to old_passwords set.
             for line in lines:
                 if line != "":
                     self.old_passwds.add(line)
+
+            #  Define the session name as the restore file used.
             self.session_name = os.path.basename(fn)
             return True
         else:
