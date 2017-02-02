@@ -192,6 +192,7 @@ class Netbrute:
                 self.runned_passwords.clear()
         elif status == 200 and self.error_string not in response_url:
             print("\n[+] Password was found: {0}".format(passwd))
+            print("[*] Response URL: {0}".format(response_url))
             self._store_data("correct.pass", passwd)
             self.found.set()
         elif status != 200:
@@ -253,7 +254,8 @@ class Netbrute:
 
             # Check if password is found and throw queue away
             if self.found.is_set():
-                for _ in self.queue.qsize():
+                # noinspection PyProtectedMember
+                for _ in range(len(self.queue._queue)):
                     yield from self.queue.get()
 
             #  Retrieve passwords from queue and test them
