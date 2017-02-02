@@ -1,6 +1,6 @@
 #!/usr/bin/env python3.6
 
-# NetBruter - HTTP-POST bruteforcer
+# NetBruter - Multi-protocol brute-forcer with asyncio
 # ------
 # Written by zc00l a.k.a shemhazai
 # https://github.com/0x00-0x00/netbruter
@@ -9,14 +9,10 @@
 
 import asyncio
 import sys
-import os
-import gzip
 
 from netbruter.arguments import argument_parsing
 from netbruter.user_agent import get_user_agents
 from netbruter.header import program_header
-from netbruter.resume import restore_script
-from netbruter.http_post import Netbrute as NetBrutePOST
 from netbruter.modules import http_post
 
 try:
