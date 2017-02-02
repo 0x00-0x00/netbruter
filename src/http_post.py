@@ -71,14 +71,28 @@ class Netbrute:
         return ua
 
     def _load_old_session(self, fn):
-        question = input("\n[*] Do you want to load passwords from file '{0}'? [y/N] ".format(os.path.basename(fn)))
-        if question.upper() == "Y":
+        """
+        Function to ask user input and decide to use or not to use restore files.
+        This also decompress (if it can) and reads data, storing it inside the main object.
+        :param fn: String => Filename
+        :return: Boolean
+        """
 
-            #  Decompress the data and store it raw
-            with gzip.open(fn, "rb", compresslevel=9) as f:
-                _data = f.read()
-            with open(fn, "wb") as f:
-                f.write(_data)
+        question = input("\n[*] Do you want to load passwords from file '{0}'? [y/N] ".format(os.path.basename(fn)))
+
+        if question.upper() == "Y":
+            try:
+                #  Decompress the data and store it raw
+                with gzip.open(fn, "rb", compresslevel=9) as f:
+                    _data = f.read()
+                with open(fn, "wb") as f:
+                    f.write(_data)
+            except:
+                #  If decompression fails, probably it is not compressed.
+                #  So we will open it and read, as it should.
+                with open(fn, "rb") as f:
+                    _data = f.read()
+
             lines = [x.decode() for x in _data.split(b"\n")]
             for line in lines:
                 if line != "":
