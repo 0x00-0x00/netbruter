@@ -1,7 +1,7 @@
 from setuptools import setup
 
 setup(name='netbruter',
-      version='0.1.3',
+      version='0.1.4',
       description='A http-post bruteforcer capable of conducting attacks with Tor network',
       url='https://github.com/0x00-0x00/netbruter.git',
       author='zc00l',
