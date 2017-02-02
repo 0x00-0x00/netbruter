@@ -3,10 +3,11 @@ var url = require('url');
 var fs = require('fs');
 var process = require('process');
 
+/** Open dev null to avoid warning messages **/
 var devNull = fs.createWriteStream('/dev/null');
 process.stderr.write = devNull.write.bind(devNull);
-
-http.createServer(function(request, response) {
+/** Create the web server **/
+var server = http.createServer( (request, response) => {
       console.log(request.method + " " + request.url + "\n");
       var url_parts = url.parse(request.url);
       var proxy = http.createClient(80, request.headers['host'])
@@ -31,6 +32,10 @@ http.createServer(function(request, response) {
       request.on('end', function() {
           proxy_request.end();
       });
-}).listen(8080, function() {
+});
+
+
+
+server.listen(8080, function() {
     console.log("NetProxy listening on *:8080");    
 });
