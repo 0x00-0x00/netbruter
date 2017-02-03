@@ -26,7 +26,7 @@ class Netbrute:
         self.max_tasks = tasks
         self.queue = Queue()
         self.attack_url = target_url
-        self.error_string = error_string
+        self.error_string = [x.strip() for x in error_string.split(',')]
         self.payload = self._generate_payload_type(payload_model)
         self.session = aiohttp_session
         self.wordlist = wordlist
@@ -197,13 +197,15 @@ class Netbrute:
         :param passwd: String => Password that originated this response
         :return: None
         """
-        if status == 200 and self.error_string in response_url:
-            self.tried_passwords += 1
-            self.runned_passwords.add(passwd)
-            if len(self.runned_passwords) % 100 == 0:
-                [self._store_data(self.session_name, x) for x in self.runned_passwords]
-                self.runned_passwords.clear()
-        elif status == 200 and self.error_string not in response_url:
+        if status == 200:
+            for error_string in self.error_string:
+                if error_string in response_url:
+                    self.tried_passwords += 1
+                    self.runned_passwords.add(passwd)
+                    if len(self.runned_passwords) % 100 == 0:
+                        [self._store_data(self.session_name, x) for x in self.runned_passwords]
+                        self.runned_passwords.clear()
+                    return
             print("\n[+] Password was found: {0}".format(passwd))
             print("[*] Response URL: {0}".format(response_url))
             self._store_data("correct.pass", passwd)
