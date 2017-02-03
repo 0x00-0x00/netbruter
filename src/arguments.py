@@ -17,6 +17,11 @@ def argument_parsing():
     parser_post.add_argument("--tor-address", type=str, help="Tor proxy address and port separated by ':'")
     parser_post.add_argument("--debug", action="store_true", help="Enable debug log messages")
 
+    parser_smb = sub_parser.add_parser('netbios', help="NetBIOS Brute-force attack")
+    parser_smb.add_argument("--ip", required=True, type=str, help="Remote host IP address.")
+    parser_smb.add_argument("-p", "--port", required=True, type=str, help="Remote host port number.", default=445)
+    parser_smb.add_argument("-w", "--wordlist", required=True, type=str, help="Wordlist to guess a correct password.")
+
     #  Parse the arguments.
     args = parser.parse_args()
     return args
