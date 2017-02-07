@@ -27,8 +27,6 @@ def http_post(args, loop):
 
     try:
         loop.run_until_complete(net.initiate(loop))
-    except Exception as e:
-        print("ERROR CAUGHT: {0}".format(e))
     except KeyboardInterrupt:
         print("[+] Saving session data into '{0}' ...".format(net.session_name))
         restore_script()

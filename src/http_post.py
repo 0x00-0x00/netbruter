@@ -51,6 +51,7 @@ class Netbrute:
         if self.tor_use is not None and tor_address is not None:
             ip, port = parse_proxy_address(tor_address)
             self.tor_address = "http://{0}:{1}".format(ip, port)
+            self.tor_address_string = tor_address
 
         # Session set of settings
         self.session_name = self._generate_session_name()
@@ -289,8 +290,8 @@ class Netbrute:
 
         #  Adjust session object and tor usage information
         if self.tor_use is True:
-            print("[+] Using tor with address {0}\n".format(args.tor_address))
-            conn = get_tor_connector(args.tor_address)
+            print("[+] Using tor with address {0}\n".format(self.tor_address_string))
+            conn = get_tor_connector(self.tor_address_string)
             self.session = aiohttp.ClientSession(loop=loop, connector=conn)
         else:
             self.session = aiohttp.ClientSession(loop=loop)
