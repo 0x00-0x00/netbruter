@@ -15,3 +15,5 @@ class NetBiosDiscovery(object):
             return False
 
         return response
+
+

@@ -36,3 +36,9 @@ def http_post(args, loop):
             with gzip.open(net.session_name, "wb", compresslevel=9) as f:
                 f.write(data)
         print("[+] Data session has been saved.")
+    return 0
+
+
+def netbios_attack(args, loop):
+
+    return 0
