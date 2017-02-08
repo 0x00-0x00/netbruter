@@ -9,6 +9,8 @@ from netbruter.user_agent import get_user_agents
 from copy import copy
 # noinspection PyPackageRequirements
 from progressbar import ProgressBar, Bar, Counter, Percentage, AdaptiveETA
+from aiohttp.errors import ClientResponseError, TimeoutError
+
 
 try:
     from asyncio import JoinableQueue as Queue
@@ -276,7 +278,15 @@ class Netbrute:
 
             #  Retrieve passwords from queue and test them
             password = yield from self.queue.get()
-            yield from self.attack_this(password)
+
+            # Do the request and deal with timeout
+            try:
+                yield from self.attack_this(password)
+            except (ClientResponseError or TimeoutError):
+                if self.debug:
+                    print("Password '{0}' request timed out.".format(password))
+                self.queue.put_nowait(password)
+                pass
             self.queue.task_done()
 
     @asyncio.coroutine
