@@ -13,7 +13,7 @@ import sys
 from netbruter.arguments import argument_parsing
 from netbruter.user_agent import get_user_agents
 from netbruter.header import program_header
-from netbruter.modules import http_post
+from netbruter.modules import http_post, netbios_attack
 
 try:
     from asyncio import JoinableQueue as Queue
@@ -34,9 +34,19 @@ if __name__ == "__main__":
     if not args:
         sys.exit(0)
 
+    #  HTTP-Post
     try:
         if args.url is not None:
             http_post(args, loop)
+            print("\n[*] Exitting cleanly...")
+            sys.exit(0)
+    except AttributeError as e:
+        pass
+
+    #  NetBIOS
+    try:
+        if args.ip is not None:
+            netbios_attack(args, loop)
             print("\n[*] Exitting cleanly...")
             sys.exit(0)
     except AttributeError as e:
