@@ -282,9 +282,10 @@ class Netbrute:
             # Do the request and deal with timeout
             try:
                 yield from self.attack_this(password)
-            except (ClientResponseError or TimeoutError):
+            except Exception as e:
                 if self.debug:
                     print("Password '{0}' request timed out.".format(password))
+                    print("Error: {0}\n".format(e))
                 self.queue.put_nowait(password)
                 pass
             self.queue.task_done()
