@@ -212,6 +212,7 @@ class Netbrute:
             print("\n[+] Password was found: {0}".format(passwd))
             print("[*] Response URL: {0}".format(response_url))
             self._store_data("correct.pass", passwd)
+            self._store_data("correct.pass", "{0}\n\n".format(self.payload))
             self.found.set()
         elif status != 200:
             self.error_passwords += 1
