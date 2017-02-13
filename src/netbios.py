@@ -9,7 +9,10 @@ class NetBiosDiscovery(object):
 
     def start(self):
         try:
-            response = self.nbns.queryIPForName(self.ip, port=self.port, timeout=30)
+            #  Try to reach the server
+            response = self.nbns.queryIPForName(self.ip, port=self.port, \
+                    timeout=30)
+
         except NetBIOSTimeout:
             print("[!] Error: NetBIOS Name Service response timed out.")
             return False
