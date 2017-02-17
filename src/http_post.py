@@ -247,7 +247,6 @@ class Netbrute:
         # Do the first request.
         async with session.post(self.pre_url, data=self._encode_payload_www(custom_payload), headers=headers, proxy=proxy_addr) as response:
             status, response_url = response.status, response.url
-
             if status == 200:
                 return 0, headers
             else:
