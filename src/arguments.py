@@ -6,7 +6,10 @@ def argument_parsing():
     sub_parser = parser.add_subparsers(help="Help comand for subparsers")
 
     parser_post = sub_parser.add_parser('http-post', help="HTTP POST Brute-force attack")
+    parser_post.add_argument("-pu", "--pre-url", help="Pre-URL for multi-page form websites.")
+    parser_post.add_argument("-pp", "--pre-payload", help="Pre-payload to use at pre-page form.")
     parser_post.add_argument("-u", "--url", help="URL to attack", required=True, type=str)
+    parser_post.add_argument("-l", "--login", help="Login to attack", type=str)
     parser_post.add_argument("-p", "--payload", help="Post packet payload (data)", type=str, required=True)
     parser_post.add_argument("-w", "--wordlist", help="Wordlist to guess correct password", required=True, type=str)
     parser_post.add_argument("-e", "--error-string", help="Error string to check correct or incorrect guesses",

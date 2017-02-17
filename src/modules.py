@@ -22,7 +22,7 @@ def tor_parse(args):
 def http_post(args, loop):
     if tor_parse(args) is False:
         return None
-    net = NetBrutePOST(None, args.url, args.payload, args.wordlist, args.error_string, args.tasks,
+    net = NetBrutePOST(None, args.pre_url, args.pre_payload, args.url, args.login, args.payload, args.wordlist, args.error_string, args.tasks,
                        tor=args.tor, tor_address=args.tor_address, debug=args.debug)
 
     try:
