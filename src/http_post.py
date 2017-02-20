@@ -23,7 +23,7 @@ class Netbrute:
     """
     HTTP-POST BruteForcer
     """
-    def __init__(self, aiohttp_session, pre_url, pre_payload, target_url, login, payload_model, wordlist, error_string, tasks, tor=None, tor_address=None, debug=None):
+    def __init__(self, loop, pre_url=None, pre_payload=None, target_url=None, login=None, payload_model=None, wordlist=None, error_string=None, tasks=64, tor=None, tor_address=None, debug=None):
         self.max_tasks = tasks
         self.queue = Queue()
         self.pre_url = pre_url
@@ -32,10 +32,10 @@ class Netbrute:
         self.login = login
         self.error_string = [x.strip() for x in error_string.split(',')]
         self.payload = self._generate_payload_type(payload_model)
-        self.session = aiohttp_session
         self.wordlist = wordlist
         self.found = Event()
         self.tor_use = tor
+        #self.session = self._generate_new_session(loop)
         self.debug = debug
         self.runned_passwords = set()
         self.old_passwds = set()
@@ -355,17 +355,6 @@ class Netbrute:
             print("Started initiation!")
         pass_number = self._read_wordlist()
         print("\n[*] Program have read {0} passwords.\n".format(pass_number))
-
-        #  Create cookie jar
-        jar = aiohttp.CookieJar(unsafe=True)
-
-        #  Adjust session object and tor usage information
-        if self.tor_use is True:
-            print("[+] Using tor with address {0}\n".format(self.tor_address_string))
-            conn = get_tor_connector(self.tor_address_string)
-            self.session = aiohttp.ClientSession(loop=loop, cookie_jar=jar, connector=conn)
-        else:
-            self.session = aiohttp.ClientSession(loop=loop, cookie_jar=jar)
 
         #  Graphical visualization of attack status
         self.progress_bar = ProgressBar(widgets=

@@ -35,13 +35,15 @@ if __name__ == "__main__":
         sys.exit(0)
 
     #  HTTP-Post
-    try:
-        if args.url is not None:
-            http_post(args, loop)
-            print("\n[*] Exitting cleanly...")
-            sys.exit(0)
-    except AttributeError as e:
-        pass
+#    try:
+    if args.url is not None:
+        http_post(args, loop)
+        print("\n[*] Exitting cleanly...")
+        sys.exit(0)
+    else:
+        print(args.url)
+#    except AttributeError as e:
+#        pass
 
     #  NetBIOS
     try:

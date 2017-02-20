@@ -22,15 +22,14 @@ def tor_parse(args):
 def http_post(args, loop):
     if tor_parse(args) is False:
         return None
-    net = NetBrutePOST(None, args.pre_url, args.pre_payload, args.url, args.login, args.payload, args.wordlist, args.error_string, args.tasks,
-                       tor=args.tor, tor_address=args.tor_address, debug=args.debug)
+    net = NetBrutePOST(loop, pre_url=args.pre_url, pre_payload=args.pre_payload, target_url=args.url, login=args.login, payload_model=args.payload, wordlist=args.wordlist, error_string=args.error_string, tasks=args.tasks, tor=args.tor, tor_address=args.tor_address, debug=args.debug)
 
     try:
         loop.run_until_complete(net.initiate(loop))
     except KeyboardInterrupt:
         print("[+] Saving session data into '{0}' ...".format(net.session_name))
         restore_script()
-        if net.session is not None and os.path.isfile(net.session_name):
+        if net.tried_passwords > 100 and os.path.isfile(net.session_name):
             with open(net.session_name, "rb") as f:
                 data = f.read()
             with gzip.open(net.session_name, "wb", compresslevel=9) as f:
