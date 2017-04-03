@@ -4,6 +4,7 @@ import random
 import os
 import time
 import gzip
+import yarl
 from netbruter.tor import get_tor_connector, parse_proxy_address
 from netbruter.user_agent import get_user_agents
 from copy import copy
@@ -212,6 +213,8 @@ class Netbrute:
         :return: None
         """
         for error_string in self.error_string:
+            if type(response_url is yarl.URL):
+                response_url = response_url.query_string
             if error_string in response_url:
                 self.tried_passwords += 1
                 self.runned_passwords.add(passwd)
