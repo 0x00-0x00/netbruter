@@ -30,7 +30,7 @@ function check_python
 
 function check_pip
 {
-    pip=$(pip -V);
+    pip=$(pip3.6 -V);
     if [[ $? != 0 ]]; then
         echo "[!] pip3.6 is not installed or not in PATH.";
         exit
