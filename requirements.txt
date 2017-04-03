@@ -2,3 +2,4 @@ progressbar2
 aiohttp
 aiosocks
 pysmb
+yarl
